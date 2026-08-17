@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday Rey!</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #d9531e 0%, #b83b14 100%);
+      --card-bg: #fff8f0;
+      --card-hover: #ffffff;
+      --text-dark: #2c1810;
+      --text-muted: #7a5c50;
+      --accent-teal: #0d9488;
+      --accent-teal-hover: #0f766e;
+      --accent-badge: #fde68a;
+      --accent-badge-text: #854d0e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ANIMATION UTILITIES */
+    .fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* STEP 1: LOCK SCREEN */
+    #lockScreen {
+      position: fixed;
+      inset: 0;
+      height: 100vh;
+      height: 100dvh;
+      background: var(--bg-gradient);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .lock-card {
+      background-color: var(--card-bg);
+      padding: 35px 25px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .lock-icon { font-size: 3rem; margin-bottom: 10px; }
+    .lock-card h1 { font-size: 1.6rem; color: var(--text-dark); margin-bottom: 8px; }
+    .lock-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
+
+    .lock-card input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid #fed7aa;
+      background: #ffffff;
+      color: var(--text-dark);
+      font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .lock-card input:focus { border-color: var(--accent-teal); }
+
+    .lock-card button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background-color: var(--accent-teal);
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .lock-card button:active {
+      transform: scale(0.96);
+      background-color: var(--accent-teal-hover);
+    }
+
+    .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 12px; display: none; }
+
+    /* STEP 2: CAKE ANIMATION SCREEN */
+    #cakeScreen {
+      display: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .cake-title {
+      font-family: 'Georgia', cursive, serif;
+      font-size: 1.8rem;
+      color: #ffffff;
+      margin-bottom: 30px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .cake-wrapper {
+      position: relative;
+      width: 240px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 35px;
+    }
+
+    .candle {
+      width: 16px;
+      height: 60px;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffffff,
+        #ffffff 8px,
+        #fdba74 8px,
+        #fdba74 16px
+      );
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      z-index: 5;
+    }
+
+    .flame {
+      width: 22px;
+      height: 30px;
+      background: #f97316;
+      border-radius: 50% 50% 20% 20%;
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 15px #f97316, 0 0 25px #facc15;
+      animation: floatFlame 0.8s infinite alternate ease-in-out;
+      cursor: pointer;
+      padding: 15px;
+      background-clip: content-box;
+    }
+
+    @keyframes floatFlame {
+      0% { transform: translateX(-50%) scale(0.95); opacity: 0.9; }
+      100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #fef08a;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #fef08a;
+      animation: pulseSparkle 1.2s infinite alternate;
+    }
+    .s1 { top: 0px; left: 70px; animation-delay: 0.2s; }
+    .s2 { top: -10px; right: 70px; animation-delay: 0.5s; }
+    .s3 { top: 30px; left: 50px; animation-delay: 0.8s; }
+
+    @keyframes pulseSparkle {
+      0% { transform: scale(0.5); opacity: 0.3; }
+      100% { transform: scale(1.3); opacity: 1; }
+    }
+
+    .cake-top-layer {
+      width: 200px;
+      height: 80px;
+      background-color: #fb923c;
+      border-radius: 25px 25px 0 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .drip-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      display: flex;
+    }
+
+    .drip {
+      flex: 1;
+      background-color: #ffedd5;
+      border-radius: 0 0 12px 12px;
+    }
+    .drip:nth-child(even) { height: 30px; }
+    .drip:nth-child(odd) { height: 18px; }
+
+    .cake-bottom-layer {
+      width: 200px;
+      height: 40px;
+      background-color: #292524;
+      border-radius: 0 0 20px 20px;
+      z-index: 1;
+    }
+
+    .plate {
+      width: 230px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      position: absolute;
+      bottom: -8px;
+      z-index: 0;
+    }
+
+    .continue-btn {
+      padding: 14px 28px;
+      background-color: #ffffff;
+      color: #ea580c;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .continue-btn:active {
+      transform: scale(0.95);
+      background-color: var(--accent-badge);
+    }
+
+    /* STEP 3: FAN LETTERS SCREEN */
+    #mainContent {
+      display: none;
+      padding: 20px 14px;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 20px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    header p { color: #ffedd5; font-size: 0.9rem; }
+
+    .letters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .letter-card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px;
+      cursor: pointer;
+      transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      user-select: none;
+    }
+
+    .letter-card:active {
+      transform: scale(0.97);
+      background-color: #fff3e6;
+    }
+
+    .letter-card h3 { font-size: 1.1rem; color: var(--text-dark); margin-bottom: 6px; }
+
+    .author-badge {
+      display: inline-block;
+      background-color: var(--accent-badge);
+      color: var(--accent-badge-text);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .letter-card .author-badge {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .letter-card .preview {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* MINI TEAM FOOTER CARD */
+    .mini-team-footer {
+      margin-top: 25px;
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 2px solid var(--accent-badge);
+    }
+
+    .mini-team-footer h3 {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-team-footer ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .mini-team-footer li {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+
+    .mini-team-footer li strong {
+      color: var(--accent-teal-hover);
+    }
+
+    /* MODAL DISPLAY */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 2000;
+    }
+
+    @media (min-width: 600px) {
+      .modal-overlay { align-items: center; padding: 20px; }
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border-radius: 20px 20px 0 0;
+      max-width: 600px;
+      width: 100%;
+      padding: 24px 20px 30px 20px;
+      position: relative;
+      max-height: 85vh;
+      max-height: 85dvh;
+      overflow-y: auto;
+      box-shadow: 0 -10px 25px rgba(0,0,0,0.3);
+    }
+
+    @media (min-width: 600px) {
+      .modal-content { border-radius: 20px; }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #e2e8f0;
+      border: none;
+      color: var(--text-dark);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .close-btn:active { background: #cbd5e1; }
+
+    .modal-badge {
+      display: inline-block !important;
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      max-width: 100%;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      background-color: var(--accent-badge);
+      color: var(--accent-badge-text);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .modal-body {
+      margin-top: 10px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STEP 1: PASSWORD LOCK SCREEN -->
+  <div id="lockScreen">
+    <div class="lock-card">
+      <div class="lock-icon">🎂</div>
+      <h1>A little Gift for you</h1>
+      <p>Happy Birthday to our PPOP 'Giant'.</p>
+      <input type="password" id="passInput" inputmode="numeric" pattern="[0-9]*" placeholder="Enter Passcode" onkeypress="handleKeyPress(event)">
+      <button id="unlockBtn">Unlock Gift</button>
+      <div id="errorMsg" class="error-msg">Incorrect passcode. Try again!</div>
+    </div>
+  </div>
+
+  <!-- STEP 2: CAKE ANIMATION SCREEN -->
+  <div id="cakeScreen">
+    <h1 class="cake-title">HAPPY BIRTHDAY REY CARIASOOO(081826)</h1>
+    
+    <div class="cake-wrapper">
+      <div class="sparkle s1"></div>
+      <div class="sparkle s2"></div>
+      <div class="sparkle s3"></div>
+      
+      <div class="candle">
+        <div class="flame" id="flame" title="Tap to blow out!"></div>
+      </div>
+      
+      <div class="cake-top-layer">
+        <div class="drip-container">
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+        </div>
+      </div>
+      <div class="cake-bottom-layer"></div>
+      <div class="plate"></div>
+    </div>
+
+    <button class="continue-btn" id="continueBtn">Continue to ReynDrops letters? ✨</button>
+  </div>
+
+  <!-- STEP 3: MAIN FAN LETTERS CONTENT -->
+  <div id="mainContent">
+    <header>
+      <h1>🎉 Happy Birthday, Rey! 🎉</h1>
+      <p>A collection of ReynDrops messages for you!</p>
+    </header>
+
+    <div class="letters-grid" id="lettersGrid"></div>
+
+    <!-- MAIN PAGE VISIBLE MINI TEAM SECTION -->
+    <div class="mini-team-footer">
+      <h3>🌟 Mini Team</h3>
+      <ul>
+        <li>• <strong>Claire</strong> (Editor of the ReynDrops page, and the form maker)</li>
+        <li>• <strong>Jim</strong> (Code, Caption sa ReynDrops page, and collect the fans letterch, minsan nag e-edit din)</li>
+         <li>• <strong>Crisha</strong> (Crush k lng plus emotional support q(Jim))</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- LETTER MODAL POPUP -->
+  <div id="letterModal" class="modal-overlay">
+    <div class="modal-content fade-in">
+      <button class="close-btn" id="closeModalBtn">&times;</button>
+      <h2 id="modalTitle"></h2>
+      <div>
+        <span id="modalAuthor" class="modal-badge"></span>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    const SECRET_PASSWORD = "0818";
+
+    const lettersData = [
+      {
+        title: "Ashii",
+        badge: "ReynDrops since April 11 2026",
+        message: "Hii kuyaaa Rey, happy birthday! 🎉 I’m always here to support you, and I’m so proud of how far you’ve come. Good luck on your journey as an artist! I hope you continue to chase your dreams and do what makes you happy. Keep doing your best, and never give up on your passion. I’ll always be cheering for you and supporting you along the way. Enjoy your special day, kuyaaa! You deserve all the happiness and success. Happy birthday again! 🥳💗"
+      },
+      {
+        title: "LESLY CARIASO MARTINEZ",
+        badge: "ReynDrops since April 11 2026",
+        message: "Happy happy birthday dad gusto ko lang sabihin na...ahm...ano ba pwede?? HAHAHHA eme, pero happy birthday dad keep safe and healthy, wag masyado mag pakapagod and mag bigay ka ng time mo sa sarili (pati narin sa mga anakis mo eme) and uso pahinga dad napapansin kase namin na parang hindi ikaw nakakapagpahinga eii, if you have free time just rest wag din masyado i down ang self, and my wish for you.....more event, happiness, and blessings came to you dad, and remember im always here your makulit na daughter na lagi nangungulila sa bespren mo🤭 eme HAHAHA, im always here supporting you when you're far away i know you heard my loud cheer for you and reyndrops, and Congrats to your Official MV ng Lions blood it's superr ganda \n\nHappy birthday dad\npasabi miss ko na siya🤭🫣\nLove you Hughes ayy mali pala\nLOVE YOU MY DADDY REY!!!"
+      },
+      {
+        title: "Claire",
+        badge: "ReynDrops",
+        message: "hi, rey! happy birthday!\n\nmore song to release and nandito lang kami to support you and stream your songs. enjoy your day, happy hbd ulit!"
+      },
+      {
+        title: "John-john",
+        badge: "ReynDrops since 2026",
+        message: "Happy birthday, Rey 🧡🥳🎂🎈🎉\nJust enjoy your special day, hopefully you're the star of P-Pop, wishing you all the best and more successful to your career life"
+      },
+      {
+        title: "Kenneth",
+        badge: "ReynDrops since May 2017",
+        message: "Happy Birthday My Favorite Chingu! Wishing You All The Best On Your Birthday! And Take Care Always! See You Sa Mga Events! ❤️❤️❤️"
+      },
+      {
+        title: "Bea",
+        badge: "ReynDrops since 10th ppop music awardsss! Naging backup dancer niyaaa, sobrang bait and TALL legit",
+        message: "Happy happy birthday kuya Rey! Salamat pooo sobra sa buhay mo and sa talent na shinashare mo sa ibang tao! Continue to inspire, perform, and do things that you love. May God bless you po ng sobra sobraaa! We love youu kuya Rey! Once again, happy happy birthday!🧡🥳"
+      },
+      {
+        title: "Yarra",
+        badge: "ReynDrops since this year",
+        message: "Happy Birthday Sir Rey! Thank you po for guiding our group from the start. We can't wait to grow within your hands on the future. Wish you all the best"
+      },
+      {
+        title: "Rogelyn",
+        badge: "ReynDrops since they cover the baddest by bgyo and starting to Stan since boiz 2022 until now",
+        message: "Hi kuya Rey, I just want to say Happy Rey Day wishing you all the best, good health, safety and also to achieve your dreams. Keep dreaming and tandaan mo lng andito kami lagi to support you always. I also witness mga challenges and struggles mo noon Nung nagsisimula ka palng maging ppop solo and I really admire you napakagaling mo, sobrang talented sana oll hahaha btw just continue your dreams kung saan ka masaya and always shine shessh and don't forget to pray to God and be humble. Enjoy your day kuya and God bless you."
+      },
+      {
+        title: "AIKO / AIKS",
+        badge: "Reyndrops SINCE HE WAS IN THE BOY GROUP BOIZ 😊",
+        message: "260818 HAPPY BIRTHDAY TO YOU OUR DEAREST IDOL REY CARIASO. MAY YOU HAVE MANY MORE BIRTHDAYS TO COME. MAY GOD BLESS YOU ON YOUR BIRTHDAY. MAY ALL YOUR DREAMS, WISHES AND GOALS IN YOUR LIFE MAY ALL COME TRUE IN THE GRACE OF GOD IN YOUR BIRTHDAY. MAY GOD’S BLESSINGS SHOWERED UPON YOUR BIRTHDAY. I WISH YOU A GOOD HEALTH AND LONG LIFE. I LOVE YOU SO MUCH. TAKE CARE ALWAYS COS I CARE FOR YOU. SEE YOU SOON. I AM SO REALLY VERY PROUD OF YOU. 🎂🎉🎁🎊🥳🎈"
+      },
+      {
+        title: "Nica",
+        badge: "ReynDrops since BOIZ WILL BE BOIZ era",
+        message: "Happy Birthday, Rey/Coach Rey/Sir Rey!🥳🧡Sana mag-enjoy ka ngayong birthday mo! Can't wait na makapunta ako sa event mo! Love u since pandemic at hanggang ngayon fan mo pa din ako.(Sobrang hirap po pigilan ang pagiging OA kapag may interaction tayo online😭) Sobrang ganda ng mga kanta mo, fav ko 'yung OOB! Continue to inspire us, ReynDrop! We love you so much! Ang wish ko lang sa birthday mo ay good health at sana matupad mo 'yung wish mo! God bless you always! Le' go Leo!🫶"
+      },
+      {
+        title: "Diane",
+        badge: "ReynDrops since I discovered Kuya Rey on a TikTok live stream; that’s where I first saw and got to know him. I decided to watch his live streams regularly and started supporting him, and I also listened to all his songs on Spotify and YouTube.",
+        message: "Happy birthday, Kuya Rey! I hope your career continues to flourish. Please take good care of yourself and stay well—wishing you good health. Happy birthday again!"
+      },
+      {
+        title: "Abby",
+        badge: "ReynDrops since Victory mall ppop fans day",
+        message: "Hello kuyaa reyy can't forget the first time I saw you subrang bait mo po Hindi man Ako nag ka Ron Ng Chance na makapag pa picture sayo pero I'm still happy parin your one sa mga inspiration ko para ituloy ulit dance and pag kanta ko anyways haha happy birthday to our daddy Rey I wish sana tuloy tuloy Yung success mo sa career and sana soon makapag release Kapa Ng maraming kantaa kayo nila kuya huges and asa see you again soon"
+      },
+      {
+        title: "Bry, yanyan",
+        badge: "ReynDrops since dati pa like me he starting to be a kpop fan, performing and coverd dance group on stage, but is pass years., ewan ko kung natatandaan nya pa😅 pero im happy kase ngayon na build pa sya at nagpatuloy masaya ako na makita sya ulit on stage to perform as a ppop artist🖤",
+        message: "Ahm hai rey i know you don't remember me pass few years before a pandemic noon, wish ko lang ay sana malayo pa ang marating mo more performance and songs ang magawa mo, im so happy dahil ngayon you doing or continue your passion and i hope maging successful ka pa im here to support you as a fan, wish you a good health bro yun lang and letsgo lionsblood wohhh!! 💜🖤"
+      },
+      {
+        title: "Cring-cring / Crisha",
+        badge: "Uhm, I discovered you when Jim mentioned you. It was actually so random HAHAHAHAHAHA because we had a topic about math? Not really sure. Then after that, Jim suddenly sent me a picture of you and explained to me who you are. I became a fan of you because I got to know you dahil kay Jim, and I’m really happy about that because Jim was the one who introduced me to who you are. So ayun, I just became a fan—long story po pero okay na 'yan (ahh, nahatak po kasi ako ng kacute-an niya kaya naging fan??)",
+        message: "HAPPY BIRTHDAY, REYYY! 💚\n\nHi, I wanna say happy birthday, Rey! First, want ko mag-thank you because nakilala kita and you make us proud of you every single day. You bring so much joy, inspiration, and happiness sa 'min. Today is a special dayyyyyyy because we get to celebrate not only your birthday, but also the amazing person and artist that you are.\n\nThank you for all the dedication and passion you put into everything you do. From your performances, music, and appearance to the little moments you share with your fans. You have a way of making people feel seen, appreciated, and inspired.\n\nThere may be days when things feel difficult or exhausting, but I hope you always remember how far you have come. Every achievement, every stage, every song, every smile, and every moment you have shared with your fans is something na worth being proud of. Nag-work hard ka para ma-reach mo kung nasaan ka ngayon, and you deserve all the magagandang bagay na dumadating sa buhay mo ngayon, at happy ako for you.\n\nAs you celebrate another year of your life, I hope this new chapter ay magbigay ng more opportunities, magandang memories, and reasons to smile. May you continue to grow not only as an artist but also as a person. I hope you get to discover more of what makes you happy, reach the dreams you are working toward, and create even more memories that you can treasure forever.\n\nAlways take care of yourself, rest when you need to, and enjoy ka ngayon 'cause it's your special day! To your dreams that are still waiting to come true, may you have the courage to chase them. Thank you for allowing your fans to be part of your journey, even though we may not know each other personally.\n\nOnce again, happy happy birthday, Rey! I hope your special day is filled with laughter, love, and happiness. Keep shining and keep being the amazing person that you are. Here's to another year of growth, success, happiness, and beautiful memories! I'll continue cheering for you and supporting you throughout your journey. No matter how far you go, always remember na nandito ako/kami na proud sa 'yo always!\n\nHAPPY BIRTHDAY, REYREY! MORE YEARS TO COME! 🎂💚"
+      },
+      {
+        title: "paul",
+        badge: "ReynDrops Since: day one",
+        message: "happy birthday kuya rey salamat kasi hindi ka nagbabago simula nung sumikat ka until now masaya ako kasi naging kuya kita kahit hindi kita nakikita and nayayakap my wish is goodhealth and goodbless kuya one again happy birthday"
+      },
+      {
+        title: "Leo",
+        badge: "July 2026",
+        message: "Happiest Birthday, Kuya Rey! \n\nCongrats on your recent release Lions Blood!! Super angas n'yo talaga dun kaya na-hook ako sa inyo, and also nakaka-LSS 'yong Korona that's why natuwa din ako sa 'yo!! I hope na this year will give you more opportunities and achievements. I hope to get to know you more! Happy Birthday again, lovelots!"
+      },
+      {
+        title: "🧡 HA: Ice Cariaso 🧡",
+        badge: "ReynDrops since: i think 1-2 years ago? i forgot haha.",
+        message: "happy birthday, papa Rey!!!! more blessings to come and more songs to release pa. sana magkita tayo soon. hopefully makapunta ka here sa Bohol. take care always!"
+      },
+      {
+        title: "Jim Wang(Bff/Head admin for real naba?)",
+        badge: "ReynDrops since May 29, 2024!",
+        message: "Hi Reykieee, #Reythan AHAHA\nI don't really know what to call you—sir Reykie na lang? HAHAHA\n\nHAPPY HAPPY HAPPY BIRTHDAY SA 'YO! 🥳\n\nUna sa lahat, I wanted to give you my birthday wishes. I hope this year is going to be your year. But if not, there’s always another year and another year. Whatever you want in this life, I hope you achieve it—paunti-unti man, but someday, somehow, it will be yours, okay?\n\nI also wanted to take this opportunity to say that failure is a part of success and a step toward a better tomorrow. Gets ba? HAHAHA What I mean is, kahit hindi ngayon, hindi 'yong plano mo, o hindi man natuloy ang kahit na ano—may mas better na darating para sa 'yo.\n\nAlso, don't put so much pressure on yourself—like when creating content for ReynDrops. I know you love doing it for us, but please, if you need to rest, rest! Your health must always come first before anything else.\n\nYk, it's been years since nung nakilala kita HAHA But I wasn't as active back then. Nung Rumble era, share post and stream lang ginagawa ko because I was too scared to be active in another fandom after what happened sa Z1ON.\n\nThen, before Rumble was released in May 2024, in-accept mo 'ko, 'nak! HAHAHAHA That time, you felt so familiar to me. Alam mo ba nung in-accept mo 'ko, I was like: \"BRO WHY DID THIS GUY ACCEPT MY FRIEND REQUEST\" for real! HAHAHA I mean, why would you accept someone? It wasn't the first time an artist accepted my friend request, pero kasi... bakit mo in-accept?! AY HAHAHAHA\n\nTas ayun, Out of Breath era—BROOO, ANG GANDA! From the lyrics to the music video? Sobrang ganda, I couldn't move on! Super easy to listen to, and since the song is about someone, na-relate ko siya sa stories ko kaya paulit-ulit ko siyang pinapakinggan. HAHA!\n\nThat time, hindi pa rin naman ako ganon ka-active for weeks or months. Kausap ko lang si Steph sa GC natin. Nahihirapan din kasi ako maging active kasi pahirapan manghiram ng cellphone—nahablutan kasi ako! HAHAHA! Tas medyo masakit din kapag may event na hindi nakakapunta. HAHAHA!\n\nFast forward to your February 2026 event! Someone asked me if gusto ko daw ba talaga pumunta. Syempre I said yes?! I was so excited beh! Nung sinabi niya na ico-cover niya registration fee ko, I was like, HELLO??? Tatanggi pa ba? HAHAHA! Edi ayun, update ko daw siya a week before para makapag-send siya.\n\nTAS BIGLANG NAG-ANNOUNCE SA 'MIN NA DAPAT TAPUSIN NA YUNG SHORT FILM! Like, talaga ma'am?! Alam mo, ini-imagine ko na eh, ayun na 'yun oh! Days before my birthday pa! Tas biglang wow HAHAHAHA. Ay, nag-rant?\n\nOn the exact date (Feb 22), nalaman ko andoon si Ate Cram! HAHAHA! Kaya ayun, nanghingi na lang ako ng video greet from you—awa na lang! HAHAHA! Nag-send din siya ng selfie mo. Syempre hindi ko pinost, akin lang 'yun??? ay HAHAHAHA Birthday gift na yun, tas ipapa-freebies ko din pala ngayon?? Ay?HAHA\n\nTas ayun, kung sino-sino tinanong ko kung may GC ka kasi nakakahiya naman mag-chat sa 'yo directly. Natatakot pa 'ko mag-chat sa 'yo back then! Eh walang nakakaalam, nakakainis sila—sina Ate Cram, Ate Reignbow... ay, nag-name reveal? HAHA!\n\nNag-notes na lang ako, tas ayun, nireplayan mo! HAHA! Naging active ako for a while, tapos naging busy na naman sa buhay. Then you mentioned before that you had plans for your birthday on Aug 16. Doon ko na chinat friend ko (Crisha) na mag-ipon na at sasamahan niya ako—wala siyang magagawa! HAHA!\n\nKaso pareho kaming super daming naging bayarin sa school. HAHAHA! Then nalaman ko 'yong event mo sa Monumento! Hinatak ko agad si Crisha. Nung una nga, akala ko hindi matutuloy kasi ang lakas talaga ng ulan. Pero tumuloy pa rin kami kasi sayang talaga! First time kita makikita mag-perform live, tas si Ethan din HAHA (pang-apat na beses ko na ata nakita si Ethan kung saang-saang event na audience kami pareho! HAHA).\n\nWho would've thought na naisip ko lang mag-edit at print ng freebies, and gumawa ng unofficial fanpage for ReynDrops para 'pag nakita nila, pwede nila akong lapitan on the day of the event? Super happy ko nun kasi marami kaming napamigay, and the performance was SO FIREEEEEE! 🔥\n\nIdk if it's for real me being Head Admin cause I'm really broke beh? HAHAHA! But I don't mind being an admin since I already have experience—from solo member admin to whole group admin, to soloist pala! Ayun pala ang plot twist ng buhay ko from Dec 2025! HAHAHAHAHA\nAnyway, sorry ang haba nito! HAHAHA. But seriously, thank you for being an inspiration to all of us and for bringing us together. I’m really proud to support you, and I’ll always be here cheering for you in your journey. Enjoy your special day! Happy Birthday again, Sir Reykie!(Ang hirap mag beg sa kanila! hmp! nangongolekta lang naman ako ng letter!) 🎉✨"
+      }
+    ];
+
+    function renderLetters() {
+      const grid = document.getElementById("lettersGrid");
+      grid.innerHTML = lettersData.map((item, index) => `
+        <div class="letter-card" data-index="${index}">
+          <h3>${escapeHtml(item.title || "Anonymous")}</h3>
+          <span class="author-badge">${escapeHtml(item.badge)}</span>
+          <div class="preview">${escapeHtml(item.message)}</div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.letter-card').forEach(card => {
+        const handleOpen = (e) => {
+          e.preventDefault();
+          const idx = card.getAttribute('data-index');
+          openLetterByIndex(idx);
+        };
+        card.addEventListener('click', handleOpen);
+      });
+    }
+
+    function openLetterByIndex(idx) {
+     const item = lettersData[idx];
+     if(!item) return;
+
+      document.getElementById("modalTitle").innerText = item.title || "Anonymous";
+  
+     const modalAuthorEl = document.getElementById("modalAuthor");
+     modalAuthorEl.innerText = item.badge;
+
+     // Display only the message without appending miniTeamNote
+     document.getElementById("modalBody").innerText = item.message;
+  
+     const modal = document.getElementById("letterModal");
+     modal.style.display = "flex";
+     document.body.style.overflow = "hidden";
+    }  
+
+    function closeModal() {
+      const modal = document.getElementById("letterModal");
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+
+    function checkPassword() {
+      const val = document.getElementById("passInput").value;
+      if (val === SECRET_PASSWORD) {
+        document.getElementById("lockScreen").style.display = "none";
+        document.getElementById("cakeScreen").style.display = "flex";
+        document.getElementById("cakeScreen").classList.add("fade-in");
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === "Enter") {
+        checkPassword();
+      }
+    }
+
+    function setupFlameExtinguish() {
+      const flame = document.getElementById("flame");
+      flame.addEventListener("click", () => {
+        flame.style.animation = "none";
+        flame.style.opacity = "0";
+        flame.style.transition = "opacity 0.4s ease-out";
+      });
+    }
+
+    function escapeHtml(str) {
+      return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("unlockBtn").addEventListener("click", checkPassword);
+      setupFlameExtinguish();
+
+      document.getElementById("continueBtn").addEventListener("click", () => {
+        document.getElementById("cakeScreen").style.display = "none";
+        const main = document.getElementById("mainContent");
+        main.style.display = "block";
+        main.classList.add("fade-in");
+        renderLetters();
+      });
+
+      document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+
+      document.getElementById("letterModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("letterModal")) {
+          closeModal();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
